@@ -1,0 +1,15 @@
+{
+  "name": "trilionclips-api",
+  "version": "1.0.0",
+  "description": "TrilionClips API for Vercel",
+  "main": "index.js",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.56.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "openai": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

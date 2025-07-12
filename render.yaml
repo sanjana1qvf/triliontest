@@ -1,0 +1,36 @@
+services:
+  # Backend Service
+  - type: web
+    name: trilion-backend
+    env: node
+    rootDir: server
+    buildCommand: chmod +x build.sh && ./build.sh
+    startCommand: node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CORS_ORIGIN
+        value: https://trilion-frontend.onrender.com
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: YOUTUBE_CLIENT_ID
+        sync: false
+      - key: YOUTUBE_CLIENT_SECRET
+        sync: false
+      - key: YOUTUBE_REDIRECT_URI
+        value: https://trilion-backend.onrender.com/auth/youtube/callback
+
+  # Frontend Service
+  - type: web
+    name: trilion-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://trilion-backend.onrender.com 
