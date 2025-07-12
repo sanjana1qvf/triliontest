@@ -16,7 +16,7 @@ const app = express();
 
 // Enhanced CORS configuration for Vercel
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'https://trilionclips.vercel.app', 'https://trilionclips-git-main-sanjana1qvf.vercel.app', 'https://triliontest.vercel.app', 'https://junkie-54kph4qce-sanjana1qvfs-projects.vercel.app', 'https://junkie-n9dx9sg0t-sanjana1qvfs-projects.vercel.app', 'https://junkie-psi.vercel.app'],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'https://trilionclips.vercel.app', 'https://trilionclips-git-main-sanjana1qvf.vercel.app', 'https://triliontest.vercel.app', 'https://junkie-54kph4qce-sanjana1qvfs-projects.vercel.app', 'https://junkie-n9dx9sg0t-sanjana1qvfs-projects.vercel.app', 'https://junkie-psi.vercel.app', 'https://junkie-hajwd713w-sanjana1qvfs-projects.vercel.app'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Range']
@@ -103,7 +103,7 @@ app.post('/analyze-viral', async (req, res) => {
       return res.status(400).json({ error: 'Invalid YouTube URL' });
     }
 
-    // Get video info using YouTube Data API (if available) or use a fallback
+    // Get video info
     const videoInfo = await getVideoInfo(videoId);
     
     // Check if AI APIs are available
@@ -402,5 +402,5 @@ function generateFallbackClips(numClips, clipDuration) {
   return clips;
 }
 
-// Export for Vercel
+// Export for Vercel serverless function
 module.exports = app;
