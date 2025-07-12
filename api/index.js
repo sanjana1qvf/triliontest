@@ -16,7 +16,7 @@ const app = express();
 
 // Enhanced CORS configuration for Vercel
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'https://trilionclips.vercel.app', 'https://trilionclips-git-main-sanjana1qvf.vercel.app', 'https://triliontest.vercel.app'],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'https://trilionclips.vercel.app', 'https://trilionclips-git-main-sanjana1qvf.vercel.app', 'https://triliontest.vercel.app', 'https://junkie-54kph4qce-sanjana1qvfs-projects.vercel.app'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Range']
@@ -42,20 +42,41 @@ app.get('/', (req, res) => {
 app.get('/test', (req, res) => {
   res.json({ 
     message: 'Backend is working on Vercel!',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    environment: {
+      openai_key_exists: !!process.env.OPENAI_API_KEY,
+      anthropic_key_exists: !!process.env.ANTHROPIC_API_KEY,
+      node_env: process.env.NODE_ENV
+    }
+  });
+});
+
+// Simple test endpoint for viral analysis
+app.post('/test-viral', (req, res) => {
+  const testClips = generateFallbackClips(3, 30);
+  res.json({
+    success: true,
+    message: 'Test viral analysis completed',
+    clips: testClips
   });
 });
 
 // Real viral analysis endpoint using AI APIs
 app.post('/analyze-viral', async (req, res) => {
   try {
+    console.log('🔍 /analyze-viral endpoint called');
+    console.log('📝 Request body:', req.body);
+    console.log('🔑 Environment check - OpenAI key exists:', !!process.env.OPENAI_API_KEY);
+    console.log('🔑 Environment check - Anthropic key exists:', !!process.env.ANTHROPIC_API_KEY);
+    
     const { ytLink, numClips = 3, clipDuration = 30 } = req.body;
     
     if (!ytLink) {
+      console.log('❌ No YouTube link provided');
       return res.status(400).json({ error: 'No YouTube link provided' });
     }
 
-    console.log('Analyzing video for viral clips:', ytLink);
+    console.log('🎬 Analyzing video for viral clips:', ytLink);
 
     // Extract video ID from YouTube URL
     const videoId = extractVideoId(ytLink);
@@ -66,6 +87,24 @@ app.post('/analyze-viral', async (req, res) => {
     // Get video info using YouTube Data API (if available) or use a fallback
     const videoInfo = await getVideoInfo(videoId);
     
+    // Check if AI APIs are available
+    if (!process.env.OPENAI_API_KEY || !process.env.ANTHROPIC_API_KEY) {
+      console.log('⚠️ AI APIs not available, using fallback data');
+      const fallbackClips = generateFallbackClips(numClips, clipDuration);
+      return res.json({
+        success: true,
+        message: 'Fallback analysis completed (AI APIs not configured)',
+        video_url: ytLink,
+        video_info: videoInfo,
+        clips: fallbackClips,
+        analysis_summary: {
+          total_clips: numClips,
+          average_viral_score: 7.5,
+          recommended_platforms: ['TikTok', 'Instagram Reels', 'YouTube Shorts']
+        }
+      });
+    }
+
     // Use Anthropic Claude to analyze the video for viral potential
     const viralAnalysis = await analyzeViralPotential(videoInfo, numClips, clipDuration);
     
@@ -324,23 +363,24 @@ function generateFallbackClips(numClips, clipDuration) {
     const endTime = startTime + clipDuration;
     
     clips.push({
+      id: `fallback_clip_${Date.now()}_${i}`,
       start_time: `${Math.floor(startTime / 60)}:${(startTime % 60).toString().padStart(2, '0')}`,
       end_time: `${Math.floor(endTime / 60)}:${(endTime % 60).toString().padStart(2, '0')}`,
+      title: `Viral Moment ${i + 1} - This Will Blow Your Mind! 😱`,
+      description: `This clip has viral potential due to its emotional impact and relatability.`,
+      duration: clipDuration,
+      timestamp: Date.now(),
+      filename: `fallback_clip_${i + 1}.mp4`,
       viral_score: 7.5 + (Math.random() * 2),
       predicted_views: Math.floor(Math.random() * 500000) + 50000,
+      thumbnail_url: `https://via.placeholder.com/300x200/FF6B6B/FFFFFF?text=Viral+Clip+${i + 1}`,
+      download_url: `https://example.com/clip_${i}.mp4`,
       target_platforms: ['TikTok', 'Instagram Reels', 'YouTube Shorts'],
       viral_reason: 'Engaging content with viral potential'
     });
   }
   
-  return {
-    clips: clips,
-    summary: {
-      total_clips: numClips,
-      average_viral_score: 8.0,
-      recommended_platforms: ['TikTok', 'Instagram Reels', 'YouTube Shorts']
-    }
-  };
+  return clips;
 }
 
 // Export for Vercel
