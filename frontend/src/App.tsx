@@ -85,7 +85,7 @@ const CheckIcon = () => (
 );
 
 function App() {
-  const API_URL = process.env.REACT_APP_API_URL || 'https://trilion-backend-production-0d35.up.railway.app';
+  const API_URL = process.env.REACT_APP_API_URL || '/api';
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [clips, setClips] = useState<Clip[]>([]);
