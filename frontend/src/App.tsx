@@ -87,6 +87,11 @@ const CheckIcon = () => (
 function App() {
   // Use the same domain for API calls to avoid CORS issues
   const API_URL = process.env.REACT_APP_API_URL || `${window.location.origin}/api`;
+  
+  // Debug logging to see what API URL is being used
+  console.log('🌐 Current origin:', window.location.origin);
+  console.log('🔗 API URL being used:', API_URL);
+  console.log('🔧 Environment variable:', process.env.REACT_APP_API_URL);
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [clips, setClips] = useState<Clip[]>([]);
